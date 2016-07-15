@@ -10,7 +10,7 @@
     <packaging>${packaging.type}</packaging>
     <name>Spreadsheet Converter</name>
     <url></url>
-    <properties> 
+    <properties>
         <packaging.type>jar</packaging.type>
         <packaging.layout>ZIP</packaging.layout>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,6 +24,7 @@
         <maven.compiler.version>3.3</maven.compiler.version>
         <maven.compiler.target>${target.version}</maven.compiler.target>
         <maven.compiler.source>${source.version}</maven.compiler.source>
+        <maven.assembly.version>2.4.1</maven.assembly.version>
         <maven.war.plugin>2.6</maven.war.plugin>
         <failsafe.plugin.version>2.19.1</failsafe.plugin.version>
         <surefire.plugin.version>2.19.1</surefire.plugin.version>
@@ -40,8 +41,25 @@
         <commons.codec.version>1.8</commons.codec.version>
         <commons.collections.version>3.2.1</commons.collections.version>
         <poi.version>3.14</poi.version>
+        <slf4j.version>1.7.21</slf4j.version>
+        <logback.version>1.1.7</logback.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
          <dependency>
              <groupId>org.apache.poi</groupId>
              <artifactId>poi-ooxml</artifactId>
@@ -77,7 +95,7 @@
             <artifactId>commons-collections</artifactId>
             <version>${commons.collections.version}</version>
         </dependency>
-		
+
         <!-- test -->
 
         <dependency>
@@ -147,8 +165,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${source.version}</source>
+                    <target>${target.version}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -180,6 +198,33 @@
                         <id>verify</id>
                         <goals>
                             <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Maven Assembly Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven.assembly.version}</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>it.gm.Application</mainClass>
+                        </manifest>
+                    </archive>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- bind to the packaging phase -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
