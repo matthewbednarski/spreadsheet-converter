@@ -54,7 +54,7 @@ public class Spreadsheet {
                     Sheet sheet = workbook.getSheetAt(indexSheet);
                     StringBuffer data = new StringBuffer();
                     if (sheet != null) {
-                        String name = sheet.getSheetName() + ".csv";
+                        String name = sheet.getSheetName();
                         Row row;
                         Cell cell;
                         // Iterate through each rows from first sheet
