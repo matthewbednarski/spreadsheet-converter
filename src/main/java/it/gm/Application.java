@@ -62,6 +62,9 @@ public class Application {
                     }
                 }
                 writeFileMap(out, output);
+            } else {
+                logger.info("File: " + args[0] + " does not exist");
+                System.exit(1);
             }
         }
     }
@@ -70,7 +73,7 @@ public class Application {
         List<String> sheets = new ArrayList<>(map.keySet());
         for (String name : sheets) {
             Path f = Paths.get(dir.toString(), name);
-            logger.info("Writing file "  + name + " to directory: "  + dir.toAbsolutePath().toString());
+            logger.info("Writing file " + name + " to directory: " + dir.toAbsolutePath().toString());
             try (FileOutputStream fos = new FileOutputStream(f.toFile())) {
                 fos.write(
                         map.get(name).getBytes(
