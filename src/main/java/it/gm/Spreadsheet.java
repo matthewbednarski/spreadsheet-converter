@@ -1,5 +1,6 @@
 package it.gm;
 
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
@@ -9,8 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -23,10 +22,10 @@ import java.util.Map;
 public class Spreadsheet {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public Map<String, String> convertToCsv(Path spreadsheet, char separator){
-        if(Files.exists(spreadsheet)) {
+    public Map<String, String> convertToCsv(Path spreadsheet, char separator) {
+        if (Files.exists(spreadsheet)) {
             Workbook wb = null;
-            try (InputStream is = new FileInputStream(spreadsheet.toFile())){
+            try (InputStream is = new FileInputStream(spreadsheet.toFile())) {
                 wb = WorkbookFactory.create(is);
                 return this.convertToCsv(wb, separator);
             } catch (InvalidFormatException e) {
@@ -48,10 +47,13 @@ public class Spreadsheet {
         }
         return null;
     }
+
     protected Map<String, String> convertToCsv(Workbook workbook, char separator) {
         Map<String, String> result = new HashMap<>();
         try {
             if (workbook != null && workbook.getNumberOfSheets() > 0) {
+                org.apache.poi.ss.usermodel.DataFormatter formatter = new
+                        org.apache.poi.ss.usermodel.DataFormatter();
                 for (int indexSheet = 0; indexSheet < workbook.getNumberOfSheets(); indexSheet++) {
                     Sheet sheet = workbook.getSheetAt(indexSheet);
                     StringBuffer data = new StringBuffer();
@@ -79,17 +81,12 @@ public class Spreadsheet {
                                         data.append(separator);
                                         break;
                                     case Cell.CELL_TYPE_NUMERIC:
-                                        String strGetValue = new BigDecimal(cell.getNumericCellValue()).setScale(0, RoundingMode.HALF_UP).toPlainString();
                                         if (DateUtil.isCellDateFormatted(cell)) {
-                                            strGetValue = new DataFormatter().formatCellValue(cell);
+                                            String strGetValue = new DataFormatter().formatCellValue(cell);
+                                            data.append(strGetValue);
                                         } else {
-                                            strGetValue = new BigDecimal(cell.getNumericCellValue()).setScale(2, RoundingMode.HALF_UP).toPlainString();
+                                            data.append(formatter.formatCellValue(cell));
                                         }
-                                        data.append(strGetValue);
-                                        data.append(separator);
-                                        break;
-                                    case Cell.CELL_TYPE_STRING:
-                                        data.append(cell.getStringCellValue());
                                         data.append(separator);
                                         break;
                                     case Cell.CELL_TYPE_BLANK:
