@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -77,7 +79,13 @@ public class Spreadsheet {
                                         data.append(separator);
                                         break;
                                     case Cell.CELL_TYPE_NUMERIC:
-                                        data.append(cell.getNumericCellValue());
+                                        String strGetValue = new BigDecimal(cell.getNumericCellValue()).setScale(0, RoundingMode.HALF_UP).toPlainString();
+                                        if (DateUtil.isCellDateFormatted(cell)) {
+                                            strGetValue = new DataFormatter().formatCellValue(cell);
+                                        } else {
+                                            strGetValue = new BigDecimal(cell.getNumericCellValue()).setScale(2, RoundingMode.HALF_UP).toPlainString();
+                                        }
+                                        data.append(strGetValue);
                                         data.append(separator);
                                         break;
                                     case Cell.CELL_TYPE_STRING:
